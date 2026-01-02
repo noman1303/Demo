@@ -1,267 +1,565 @@
+# 📍 Nearby Places App
 
-📍 Nearby Places Finder (SwiftUI)
+A modern iOS application built with **SwiftUI** that helps users discover nearby places using the Google Places API. Search for ATMs, restaurants, spas, pharmacies, and more with real-time location tracking.
 
-A modern SwiftUI iOS app that allows users to search for nearby places such as ATMs, restaurants, spas, hospitals, cafés, and more — similar to Google Maps search experience.
+![iOS](https://img.shields.io/badge/iOS-15.0+-blue.svg)
+![Swift](https://img.shields.io/badge/Swift-5.5+-orange.svg)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-3.0+-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-The app automatically detects the user’s location, displays the location name (city/state), and shows nearby places in a clean, professional UI.
+---
 
-⸻
+## 📱 Features
 
-✨ Features
-	•	🔍 Search anything (ATM, spa, restaurant, hospital, etc.)
-	•	📍 Auto-detects current user location
-	•	🏙️ Shows human-readable location name (not latitude/longitude)
-	•	🧭 Nearby search using real-world place data
-	•	⏳ Loading indicator while searching
-	•	🧱 Professional card-based UI
-	•	🆓 Uses free Google Places API credits
-	•	🧼 Clean MVVM architecture
-	•	⚡ Built entirely with SwiftUI
+### Core Functionality
+- 🔍 **Real-time Search**: Search for any type of place near your location
+- 📍 **Live Location Tracking**: Automatic location detection with reverse geocoding
+- 🗺️ **Google Places Integration**: Powered by Google Places API for accurate results
+- ⚡ **Instant Results**: Fast and responsive search with loading indicators
+- 🎨 **Modern UI**: Clean, intuitive interface built with SwiftUI
 
-⸻
+### User Experience
+- **Loading States**: Visual feedback while searching
+- **Empty States**: Helpful messages when no results found
+- **Location Display**: Shows city, state, and country
+- **Search Debouncing**: Optimized to reduce unnecessary API calls
+- **Beautiful Cards**: Places displayed in elegant card layout
 
-📱 App Preview (Behavior)
+### Technical Features
+- **MVVM Architecture**: Clean separation of concerns
+- **Reactive Programming**: SwiftUI's @Published properties
+- **Error Handling**: Graceful handling of network and location errors
+- **Battery Optimization**: Stops location updates after getting coordinates
+- **Memory Management**: Proper use of weak references to prevent leaks
 
-📍 Ahmedabad, Gujarat, India
-[ Search ATM, spa, restaurant... ]
+---
 
-🔴 HDFC ATM
-   Near CG Road, Ahmedabad
+## 🚀 Getting Started
 
-🔴 Relax Spa
-   Navrangpura, Ahmedabad
+### Prerequisites
+- **Xcode 13.0+**
+- **iOS 15.0+**
+- **Apple Developer Account** (for device testing)
+- **Google Cloud Account** with Places API enabled
 
+### Installation
 
-⸻
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/NearbyPlacesApp.git
+   cd NearbyPlacesApp
+   ```
 
-🏗️ Project Architecture (MVVM)
+2. **Get Google Places API Key**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable "Places API"
+   - Create credentials (API Key)
+   - Restrict the key to iOS apps for security
 
-NearbyPlacesApp
-│
-├── Models
-│   └── Place.swift
-│
-├── Services
-│   ├── LocationManager.swift
-│   └── PlacesAPIService.swift
-│
-├── ViewModels
-│   └── PlacesViewModel.swift
-│
-├── Views
-│   └── ContentView.swift
-│
-└── NearbyPlacesAppApp.swift
+3. **Add API Key**
+   - Open `PlacesAPIService.swift`
+   - Replace the placeholder with your API key:
+   ```swift
+   private let apiKey = "YOUR_GOOGLE_PLACES_API_KEY_HERE"
+   ```
 
+4. **Configure Info.plist**
+   Add location permission descriptions:
+   ```xml
+   <key>NSLocationWhenInUseUsageDescription</key>
+   <string>We need your location to find nearby places</string>
+   ```
 
-⸻
+5. **Build and Run**
+   - Open `NearbyPlacesApp.xcodeproj` in Xcode
+   - Select your target device or simulator
+   - Press `Cmd + R` to build and run
 
-🧠 How This Project Works
+---
 
-1️⃣ Get User Location (Apple – Free)
-	•	Uses CoreLocation
-	•	Requests user permission
-	•	Fetches latitude & longitude
-	•	Converts coordinates into city/state/country using reverse geocoding
+## 🏗️ Project Architecture
 
-➡ No Google API required for location name.
+### MVVM Pattern
+```
+┌─────────────────┐
+│     View        │  ← ContentView.swift
+│   (SwiftUI)     │     PlaceCardView
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   ViewModel     │  ← PlacesViewModel.swift
+│  (ObservableObject)
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│     Model       │  ← Place.swift
+│  (Data Structure)
+└─────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│    Service      │  ← PlacesAPIService.swift
+│  (API Layer)    │     LocationManager.swift
+└─────────────────┘
+```
 
-⸻
+### File Structure
+```
+NearbyPlacesApp/
+├── Models/
+│   └── Place.swift                 # Data model for places
+├── ViewModels/
+│   └── PlacesViewModel.swift       # Business logic & state management
+├── Services/
+│   ├── PlacesAPIService.swift      # Google Places API integration
+│   └── LocationManager.swift       # Location tracking & permissions
+└── Views/
+    └── ContentView.swift           # Main UI components
+```
 
-2️⃣ User Searches a Place
+---
 
-User types:
+## 💻 Code Explanation
 
-atm
-spa
-restaurant
-coffee shop
+### 1. Place Model (`Place.swift`)
+Represents a single place with all its properties:
 
-
-⸻
-
-3️⃣ Call Places API (Text Search)
-
-The app sends a request to the Places Text Search API from Google Maps:
-
-https://maps.googleapis.com/maps/api/place/textsearch/json
-
-With parameters:
-	•	Search text (atm near me)
-	•	User latitude & longitude
-	•	Radius (nearby area)
-	•	API key
-
-⸻
-
-4️⃣ API Returns Nearby Places
-
-The response includes:
-	•	Place name
-	•	Address
-	•	Location details
-
-The app parses the JSON and converts it into Swift models.
-
-⸻
-
-5️⃣ Display Results (SwiftUI)
-	•	Shows results in card-style UI
-	•	Uses LazyVStack for performance
-	•	Shows loading indicator during search
-
-⸻
-
-🧩 Code Explanation (Key Files)
-
-⸻
-
-📦 Place.swift
-
-Model representing a place result.
-
+```swift
 struct Place: Identifiable {
-    let id = UUID()
-    let name: String
-    let address: String
+    let id = UUID()              // Unique identifier
+    let name: String             // Place name
+    let address: String          // Full address
+    let rating: Double?          // Google rating (1-5)
+    let isOpen: Bool?            // Currently open/closed
+    let distance: Double?        // Distance in km
 }
+```
 
+**Why it matters:**
+- `Identifiable` protocol enables SwiftUI to track items in lists
+- Optional properties handle missing data gracefully
+- UUID ensures each place is uniquely identifiable
 
-⸻
+---
 
-📍 LocationManager.swift
-	•	Requests location permission
-	•	Fetches user coordinates
-	•	Converts coordinates to city/state name
+### 2. PlacesViewModel (`PlacesViewModel.swift`)
+Manages the app's business logic and state:
 
-@Published var locationName: String = "Fetching location..."
+```swift
+final class PlacesViewModel: ObservableObject {
+    @Published var places: [Place] = []      // Updates UI automatically
+    @Published var isLoading: Bool = false   // Shows/hides loading indicator
+    
+    func search(text: String, location: CLLocation?) {
+        // Validates input
+        // Shows loading state
+        // Calls API service
+        // Updates UI with results
+    }
+}
+```
 
-Uses CLGeocoder (Apple, free).
+**Key Features:**
+- **@Published**: Automatically updates UI when values change
+- **Validation**: Checks for empty strings and valid location
+- **Main Thread Safety**: All UI updates happen on main thread
+- **Weak References**: Prevents memory leaks with `[weak self]`
 
-⸻
+---
 
-🌐 PlacesAPIService.swift
+### 3. PlacesAPIService (`PlacesAPIService.swift`)
+Handles all communication with Google Places API:
 
-Handles API communication.
-	•	Builds request URL
-	•	Calls Places Text Search API
-	•	Parses JSON response
-	•	Returns [Place]
+```swift
+func searchPlaces(
+    query: String,
+    location: CLLocation,
+    completion: @escaping ([Place]) -> Void
+) {
+    // 1. Build API URL with query and coordinates
+    // 2. Make network request
+    // 3. Parse JSON response
+    // 4. Convert to Place objects
+    // 5. Return results via completion handler
+}
+```
 
-func searchPlaces(query: String, location: CLLocation, completion: @escaping ([Place]) -> Void)
+**API Request Structure:**
+```
+https://maps.googleapis.com/maps/api/place/textsearch/json
+  ?query=restaurant+near+me
+  &location=37.7749,-122.4194
+  &radius=5000
+  &key=YOUR_API_KEY
+```
 
+**Response Parsing:**
+- Extracts place name and address
+- Handles missing data with optional chaining
+- Returns empty array on errors (graceful degradation)
 
-⸻
+---
 
-🧠 PlacesViewModel.swift
+### 4. LocationManager (`LocationManager.swift`)
+Manages device location and permissions:
 
-Business logic layer.
-	•	Handles search input
-	•	Manages loading state
-	•	Connects API results to UI
+```swift
+final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    @Published var location: CLLocation?          // User's coordinates
+    @Published var locationName: String           // Human-readable address
+    @Published var permissionStatus: CLAuthorizationStatus
+    @Published var isLoadingLocation: Bool
+    
+    // Handles permission changes
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager)
+    
+    // Receives location updates
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
+    
+    // Converts coordinates to address
+    private func reverseGeocode(location: CLLocation)
+}
+```
 
-@Published var places: [Place] = []
-@Published var isLoading: Bool = false
+**Permission Flow:**
+1. Check current authorization status
+2. Request permission if not determined
+3. Start location updates when authorized
+4. Stop updates after getting location (saves battery)
 
+**Reverse Geocoding:**
+- Converts coordinates → readable address
+- Example: `(37.7749, -122.4194)` → `San Francisco, CA, USA`
 
-⸻
+---
 
-🎨 ContentView.swift
+### 5. ContentView (`ContentView.swift`)
+Main user interface built with SwiftUI:
 
-UI layer.
-	•	Displays location name
-	•	Search bar
-	•	Loading indicator
-	•	Results list (cards)
+```swift
+struct ContentView: View {
+    @StateObject private var locationManager = LocationManager()
+    @StateObject private var viewModel = PlacesViewModel()
+    @State private var searchText = ""
+    
+    var body: some View {
+        // Location display
+        // Search field
+        // Loading indicator
+        // Results list
+    }
+}
+```
 
-Uses:
-	•	@StateObject
-	•	LazyVStack
-	•	Custom PlaceCardView
+**UI Components:**
+- **Location Bar**: Shows current location with icon
+- **Search Field**: Real-time search with autocomplete disabled
+- **Loading Indicator**: ProgressView during API calls
+- **Place Cards**: Beautiful cards with place information
 
-⸻
+**SwiftUI Features Used:**
+- `@StateObject`: Creates and owns observable objects
+- `@State`: Manages local view state
+- `.onChange(of:)`: Reacts to search text changes
+- `LazyVStack`: Efficient scrolling for large lists
 
-🔑 How to Get Google Places API Key (Step-by-Step)
+---
 
-1️⃣ Open Google Cloud Console
+## 🔧 How It Works
 
-👉 https://console.cloud.google.com/
+### Search Flow
 
-2️⃣ Create a Project
-	•	Click New Project
-	•	Give it a name
+```
+User types "ATM"
+      ↓
+ContentView detects change (.onChange)
+      ↓
+ViewModel.search() is called
+      ↓
+Validates input & location
+      ↓
+Sets isLoading = true
+      ↓
+PlacesAPIService makes HTTP request
+      ↓
+Google Places API returns JSON
+      ↓
+Parse JSON → [Place] array
+      ↓
+Update ViewModel.places
+      ↓
+SwiftUI automatically updates UI
+      ↓
+User sees results!
+```
 
-3️⃣ Enable Places API
-	•	APIs & Services → Library
-	•	Search Places API
-	•	Enable it
+### Location Flow
 
-4️⃣ Create API Key
-	•	APIs & Services → Credentials
-	•	Create Credentials → API Key
+```
+App Launches
+      ↓
+LocationManager.init()
+      ↓
+Request location permission
+      ↓
+User grants permission
+      ↓
+Start location updates
+      ↓
+Receive location coordinates
+      ↓
+Reverse geocode (coordinates → address)
+      ↓
+Update locationName
+      ↓
+Stop location updates (save battery)
+```
 
-5️⃣ Use the API Key in Code
+---
 
-private let apiKey = "YOUR_API_KEY_HERE"
+## 🎯 Usage Examples
 
+### Basic Search
+1. Open the app
+2. Wait for location to load
+3. Type "restaurant" in search field
+4. View nearby restaurants instantly
 
-⸻
+### Specific Searches
+- **"ATM near me"** → Find nearby ATMs
+- **"24 hour pharmacy"** → Find late-night pharmacies
+- **"coffee shop"** → Find coffee shops
+- **"gas station"** → Find gas stations
 
-💰 Is This API Free?
+### Search Tips
+- Be specific: "Italian restaurant" vs "restaurant"
+- Use common terms Google recognizes
+- Wait for location to load for best results
+- Search requires at least 2 characters
 
-✅ Yes (for learning & small apps)
-	•	Google provides free monthly credits
-	•	This project easily stays within free limits
-	•	No backend required
-	•	Billing account is needed, but no charge if under limit
+---
 
-👉 Perfect for:
-	•	Learning
-	•	Portfolio
-	•	Demo apps
-	•	Interview projects
+## 🛠️ Customization
 
-⸻
+### Change Search Radius
+In `PlacesAPIService.swift`:
+```swift
+&radius=5000  // Change to 1000 for 1km, 10000 for 10km
+```
 
-🔐 Security Note (Important)
-	•	❌ Do NOT commit your API key to GitHub
-	•	Use key restrictions in production
-	•	For development, restriction can be None
+### Modify Place Card Design
+In `ContentView.swift`, update `PlaceCardView`:
+```swift
+struct PlaceCardView: View {
+    var body: some View {
+        // Customize colors, fonts, spacing here
+    }
+}
+```
 
-⸻
+### Add More Place Properties
+1. Update `Place.swift` model
+2. Parse additional fields in `PlacesAPIService.swift`
+3. Display in `PlaceCardView`
 
-🛠 Requirements
-	•	Xcode 15+
-	•	iOS 16+
-	•	SwiftUI
-	•	Internet connection
-	•	Location permission enabled
+---
 
-⸻
+## ⚠️ Known Limitations
 
-🚀 Possible Enhancements
-	•	🔍 Autocomplete suggestions (Google Maps style)
-	•	🗺️ Map view with pins
-	•	📍 Distance from user (km)
-	•	⭐ Ratings & open/close status
-	•	🧭 Directions via Apple Maps
-	•	🧪 Unit testing
+1. **API Key Exposure**: API key is in source code (use environment variables in production)
+2. **No Caching**: Results aren't cached (implement caching for better performance)
+3. **Limited Error UI**: Errors only printed to console (add user-facing error messages)
+4. **No Offline Mode**: Requires internet connection
+5. **Single Result Page**: No pagination for large result sets
 
-⸻
+---
 
-🎯 Why This Project Is Good for Learning
-	•	Real-world API usage
-	•	Clean MVVM structure
-	•	Modern SwiftUI UI
-	•	Location-based logic
-	•	Interview-ready explanation
+## 🚀 Future Enhancements
 
-⸻
+### Phase 1: Production Ready
+- [ ] Add proper error handling UI
+- [ ] Implement empty state views
+- [ ] Add retry mechanism for failed requests
+- [ ] Store API key securely (Keychain/Environment)
+- [ ] Add permission denied UI
 
-📄 License
+### Phase 2: Enhanced Features
+- [ ] Map view with place markers
+- [ ] Detailed place view (photos, reviews, hours)
+- [ ] Favorites/Bookmarks system
+- [ ] Filter by rating, distance, open now
+- [ ] Share place information
 
-This project is for educational and learning purposes.
-Google Places API usage must comply with Google’s terms.
+### Phase 3: Advanced
+- [ ] Offline caching with Core Data
+- [ ] Search history
+- [ ] Route navigation integration
+- [ ] User reviews and ratings
+- [ ] Voice search
+- [ ] AR navigation
 
-⸻
+---
+
+## 🧪 Testing
+
+### Manual Testing Checklist
+- [ ] Search with valid query returns results
+- [ ] Search with invalid query shows empty state
+- [ ] Location permission denied shows appropriate message
+- [ ] Loading indicator appears during search
+- [ ] Location updates correctly
+- [ ] App handles no internet connection gracefully
+
+### Device Testing
+Test on:
+- iPhone SE (smallest screen)
+- iPhone 14 Pro (notch/dynamic island)
+- iPhone 14 Pro Max (largest screen)
+- iPad (different layout)
+
+---
+
+## 🐛 Troubleshooting
+
+### No Results Appearing
+- Check API key is valid
+- Verify Places API is enabled in Google Cloud
+- Check internet connection
+- Ensure location permission is granted
+- Look at Xcode console for API errors
+
+### Location Not Working
+- Check Info.plist has location permission description
+- Verify location permission is granted in Settings
+- Try resetting location permissions
+- Test on real device (simulator has issues)
+
+### Build Errors
+- Clean build folder: `Cmd + Shift + K`
+- Delete derived data
+- Restart Xcode
+- Check Swift version compatibility
+
+---
+
+## 📚 Learning Resources
+
+### SwiftUI
+- [Apple SwiftUI Documentation](https://developer.apple.com/documentation/swiftui/)
+- [Hacking with Swift](https://www.hackingwithswift.com/quick-start/swiftui)
+- [SwiftUI by Example](https://www.hackingwithswift.com/quick-start/swiftui)
+
+### Core Location
+- [Apple Core Location Guide](https://developer.apple.com/documentation/corelocation)
+- [Ray Wenderlich Location Tutorial](https://www.raywenderlich.com/5247-core-location-tutorial-for-ios-tracking-visited-locations)
+
+### Google Places API
+- [Places API Documentation](https://developers.google.com/maps/documentation/places/web-service)
+- [Text Search Requests](https://developers.google.com/maps/documentation/places/web-service/search-text)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Contribution Guidelines
+- Follow Swift style guide
+- Add comments for complex logic
+- Test on multiple devices
+- Update README if needed
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see below for details:
+
+```
+MIT License
+
+Copyright (c) 2026 Noman Belim
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+ 
+---
+
+## 🙏 Acknowledgments
+
+- **Google Places API** for providing place data
+- **Apple** for SwiftUI and Core Location frameworks
+- **iOS Developer Community** for inspiration and support
+ 
+---
+
+## 📊 Project Stats
+
+- **Lines of Code**: ~400
+- **Files**: 5
+- **Dependencies**: 0 (only native iOS frameworks)
+- **Minimum iOS Version**: 15.0
+- **Development Time**: ~8 hours
+
+---
+
+## 🎓 What You'll Learn
+
+By studying this project, you'll understand:
+
+✅ **SwiftUI Fundamentals**
+- View composition and modifiers
+- State management with @State and @StateObject
+- Observable objects and @Published properties
+
+✅ **MVVM Architecture**
+- Separation of concerns
+- View ↔ ViewModel communication
+- Data binding
+
+✅ **Networking**
+- URLSession basics
+- JSON parsing
+- Asynchronous operations
+- Completion handlers
+
+✅ **Location Services**
+- Core Location framework
+- Permission handling
+- Reverse geocoding
+- Battery optimization
+
+✅ **iOS Best Practices**
+- Memory management with weak references
+- Main thread UI updates
+- Error handling
+- User privacy
+
+---
  
